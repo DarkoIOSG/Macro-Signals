@@ -777,7 +777,7 @@
     async function init() {
       let data;
       try {
-        const res = await fetch("data.json");
+        const res = await fetch("public/data.json");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         data = await res.json();
       } catch (e) {
