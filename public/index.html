@@ -18,6 +18,7 @@
       --bearish: #ef4444;
       --neutral: #4b5563;
       --accent: #f59e0b;
+      --purple: #818cf8;
     }
 
     body {
@@ -29,7 +30,7 @@
     }
 
     header {
-      padding: 20px 24px 16px;
+      padding: 16px 24px;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -41,12 +42,45 @@
     header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.3px; }
     #last-updated { color: var(--muted); font-size: 12px; }
 
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 24px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 8px 18px;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-bottom: none;
+      transition: color 0.15s;
+      position: relative;
+      bottom: -1px;
+    }
+
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--border);
+      border-bottom-color: var(--surface);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
     .main { padding: 24px; max-width: 1400px; margin: 0 auto; }
 
-    /* Summary cards */
+    /* Cards */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 12px;
       margin-bottom: 28px;
     }
@@ -84,10 +118,7 @@
     .chart-card h2 { font-size: 13px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
     .chart-wrap { position: relative; height: 220px; }
 
-    /* Signal chart — full width */
-    .chart-card.full { grid-column: 1 / -1; }
-
-    /* Signal detail chart */
+    /* Signal detail */
     #signal-detail-wrap {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -158,9 +189,229 @@
     .badge.bearish { background: rgba(239,68,68,0.15); color: var(--bearish); }
     .badge.neutral { background: rgba(75,85,99,0.2); color: var(--muted); }
 
+    /* ===================== D10 STRATEGY STYLES ===================== */
+
+    .d10-hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .d10-regime-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .regime-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .regime-cold    { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+    .regime-neutral { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .regime-hot     { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .regime-extreme { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    .d10-regime-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .d10-regime-sub   { font-size: 12px; color: var(--muted); }
+
+    /* Exposure gauge */
+    .exposure-gauge-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .gauge-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .gauge-track {
+      height: 10px;
+      background: #2a2d3a;
+      border-radius: 5px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.5s ease;
+    }
+
+    .gauge-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .gauge-value {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .gauge-note { font-size: 11px; color: var(--muted); }
+
+    /* Methodology grid */
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .method-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .method-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .method-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .method-card h3 { font-size: 13px; font-weight: 600; }
+    .method-card p  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .method-card ul { font-size: 12px; color: var(--muted); line-height: 1.8; padding-left: 16px; }
+    .method-card li { margin-bottom: 2px; }
+
+    /* Parameters table */
+    .param-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .param-table th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .param-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(42,45,58,0.5);
+    }
+
+    .param-table tr:last-child td { border-bottom: none; }
+    .param-table td:first-child { color: var(--muted); font-size: 12px; }
+    .param-table td:last-child  { font-weight: 500; font-family: "SF Mono", "Fira Code", monospace; font-size: 12px; color: var(--purple); }
+    .param-table td:nth-child(2) { color: var(--muted); font-size: 12px; }
+
+    /* Signal universe table */
+    .universe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .universe-cat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .universe-cat-name { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+    .universe-count { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .universe-breakdown { font-size: 11px; color: var(--muted); line-height: 1.7; }
+    .universe-bull { color: var(--bullish); }
+    .universe-bear { color: var(--bearish); }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -21px;
+      top: 5px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .timeline-item.highlight::before { background: var(--accent); }
+    .timeline-item strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 2px; }
+
     /* Loading / error */
     #loading { text-align: center; padding: 80px; color: var(--muted); font-size: 16px; }
     #error { text-align: center; padding: 80px; color: var(--bearish); }
+
+    /* Divider */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* Note chip */
+    .note-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(129,140,248,0.1);
+      border: 1px solid rgba(129,140,248,0.2);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--purple);
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -169,71 +420,299 @@
     <span id="last-updated">Loading...</span>
   </header>
 
-  <div id="loading">Loading data...</div>
-  <div id="error" style="display:none"></div>
+  <!-- Tab navigation -->
+  <div class="tabs">
+    <div class="tab active" data-tab="signals">Market Signals</div>
+    <div class="tab" data-tab="d10">D10 Strategy</div>
+  </div>
 
-  <div class="main" id="app" style="display:none">
+  <div id="loading" style="padding:80px;text-align:center;color:var(--muted)">Loading data...</div>
+  <div id="error" style="display:none;padding:80px;text-align:center;color:var(--bearish)"></div>
 
-    <!-- Summary cards -->
-    <div class="cards">
-      <div class="card">
-        <div class="card-label">BTC Price</div>
-        <div class="card-value neutral" id="s-price">—</div>
+  <!-- ==================== MARKET SIGNALS TAB ==================== -->
+  <div class="tab-content active" id="tab-signals">
+    <div class="main" id="app" style="display:none">
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">BTC Price</div>
+          <div class="card-value neutral" id="s-price">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Composite Score</div>
+          <div class="card-value" id="s-composite">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Bullish Signals</div>
+          <div class="card-value bullish" id="s-bullish">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Neutral Signals</div>
+          <div class="card-value neutral" id="s-neutral">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Bearish Signals</div>
+          <div class="card-value bearish" id="s-bearish">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Total Signals</div>
+          <div class="card-value neutral" id="s-total">—</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-label">Composite Score</div>
-        <div class="card-value" id="s-composite">—</div>
+
+      <div class="charts">
+        <div class="chart-card">
+          <h2>BTC Price (USD)</h2>
+          <div class="chart-wrap"><canvas id="btc-chart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h2>Composite Score</h2>
+          <div class="chart-wrap"><canvas id="composite-chart"></canvas></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-label">Bullish Signals</div>
-        <div class="card-value bullish" id="s-bullish">—</div>
+
+      <div id="signal-detail-wrap">
+        <h2 id="signal-detail-title">Signal</h2>
+        <div id="signal-detail-desc"></div>
+        <div id="signal-detail-chart-wrap"><canvas id="signal-detail-chart"></canvas></div>
       </div>
-      <div class="card">
-        <div class="card-label">Neutral Signals</div>
-        <div class="card-value neutral" id="s-neutral">—</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Bearish Signals</div>
-        <div class="card-value bearish" id="s-bearish">—</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Total Signals</div>
-        <div class="card-value neutral" id="s-total">—</div>
-      </div>
+
+      <div id="signal-categories"></div>
     </div>
+  </div>
 
-    <!-- Charts -->
-    <div class="charts">
-      <div class="chart-card">
-        <h2>BTC Price (USD)</h2>
-        <div class="chart-wrap"><canvas id="btc-chart"></canvas></div>
+  <!-- ==================== D10 STRATEGY TAB ==================== -->
+  <div class="tab-content" id="tab-d10">
+    <div class="main">
+
+      <!-- Note chip -->
+      <div class="note-chip">
+        &#9889; Live state derived from daily on-chain signals &mdash; pair-power combinatorics run quarterly offline
       </div>
-      <div class="chart-card">
-        <h2>Composite Score</h2>
-        <div class="chart-wrap"><canvas id="composite-chart"></canvas></div>
+
+      <!-- Hero row: regime + exposure proxy + key stats -->
+      <div class="d10-hero">
+
+        <div class="d10-regime-card">
+          <div class="d10-regime-label">MVRV Regime</div>
+          <div id="d10-regime-badge" class="regime-badge regime-neutral">...</div>
+          <div id="d10-regime-sub" class="d10-regime-sub">MVRV Z-score: —</div>
+          <div class="d10-regime-sub" style="margin-top:4px; font-size:11px">
+            Regime conditions the training window weight for pair-power scoring.
+            Same-regime days get weight 1.0, adjacent 0.5, distant 0.1.
+          </div>
+        </div>
+
+        <div class="exposure-gauge-wrap">
+          <div class="gauge-label">Implied D10 Exposure (Proxy)</div>
+          <div id="d10-exposure-value" class="gauge-value">—</div>
+          <div class="gauge-track">
+            <div id="d10-gauge-fill" class="gauge-fill" style="width:50%;background:#f59e0b"></div>
+          </div>
+          <div class="gauge-labels"><span>0%</span><span>50%</span><span>100%</span></div>
+          <div class="gauge-note" style="margin-top:8px" id="d10-exposure-note">Based on composite score proxy</div>
+        </div>
+
+        <div class="d10-regime-card">
+          <div class="d10-regime-label">Signal Universe</div>
+          <div style="font-size:22px;font-weight:700;margin-bottom:4px">55+</div>
+          <div class="d10-regime-sub">31 on-chain/macro state signals</div>
+          <div class="d10-regime-sub">~24 technical signals (MABreak, ZScore, RSI, MACD, Bollinger, SP500)</div>
+          <div class="d10-regime-sub">+ delta variants (7d / 30d differences)</div>
+        </div>
+
+        <div class="d10-regime-card">
+          <div class="d10-regime-label">Backtest Performance</div>
+          <div style="font-size:22px;font-weight:700;margin-bottom:4px;color:var(--bullish)">~1.18</div>
+          <div class="d10-regime-sub">Sharpe Ratio (2020&ndash;present)</div>
+          <div class="d10-regime-sub" style="margin-top:6px">10% allocation steps &bull; 7-day cooldown</div>
+          <div class="d10-regime-sub">0&ndash;100% BTC exposure range</div>
+        </div>
+
       </div>
+
+      <!-- Current signal breakdown for D10 inputs -->
+      <div class="section-title" style="margin-bottom:14px">Current On-Chain Signal State (D10 inputs)</div>
+      <div class="universe-grid" id="d10-signal-breakdown"></div>
+
+      <hr class="section-divider">
+
+      <!-- Methodology -->
+      <div class="section-title" style="margin-bottom:16px">Methodology</div>
+      <div class="method-grid">
+
+        <div class="method-card">
+          <div class="method-card-header">
+            <div class="method-icon" style="background:rgba(129,140,248,0.1)">&#128200;</div>
+            <h3>Pair-Power Combinatorics</h3>
+          </div>
+          <p>Every rebalance, all signal pairs are scored by their joint-state predictive power on 90-day forward BTC returns (H90). A pair receives a power score based on the best joint state's hit rate and effective sample size.</p>
+          <ul style="margin-top:8px">
+            <li>Top 1% of pairs selected per rebalance</li>
+            <li>Significance floor: mean + 1&sigma; of all pair scores</li>
+            <li>Minimum 5 pairs as fallback</li>
+            <li>Joint states: (+1,+1), (+1,-1), (-1,+1), (-1,-1), neutral combinations</li>
+          </ul>
+        </div>
+
+        <div class="method-card">
+          <div class="method-card-header">
+            <div class="method-icon" style="background:rgba(245,158,11,0.1)">&#127919;</div>
+            <h3>2Y + 3Y Ensemble</h3>
+          </div>
+          <p>Two independent combo signals are computed in parallel &mdash; one trained on 2-year rolling windows, one on 3-year windows &mdash; then averaged into a single ensemble composite.</p>
+          <ul style="margin-top:8px">
+            <li>Reduces sensitivity to training window length</li>
+            <li>2Y window: more responsive to recent regime shifts</li>
+            <li>3Y window: more stable pair rankings, less noise</li>
+            <li>Simple average of both combo signals</li>
+          </ul>
+        </div>
+
+        <div class="method-card">
+          <div class="method-card-header">
+            <div class="method-icon" style="background:rgba(16,185,129,0.1)">&#127968;</div>
+            <h3>MVRV Regime Conditioning</h3>
+          </div>
+          <p>Training data is soft-weighted by MVRV Z-score regime. Pairs trained on periods in the same market regime as today receive higher weight.</p>
+          <ul style="margin-top:8px">
+            <li>COLD: MVRV &lt; 0 (undervalued)</li>
+            <li>NEUTRAL: 0 &le; MVRV &lt; 2 (fair value)</li>
+            <li>HOT: 2 &le; MVRV &lt; 5 (overvalued)</li>
+            <li>EXTREME: MVRV &ge; 5 (bubble territory)</li>
+            <li>Same regime &rarr; 1.0 &bull; Adjacent &rarr; 0.5 &bull; Distant &rarr; 0.1</li>
+          </ul>
+        </div>
+
+        <div class="method-card">
+          <div class="method-card-header">
+            <div class="method-icon" style="background:rgba(239,68,68,0.1)">&#9881;</div>
+            <h3>Execution &amp; Gate</h3>
+          </div>
+          <p>Position sizing uses a discrete 10% step system with a Holm step-down statistical gate to filter low-confidence signals.</p>
+          <ul style="margin-top:8px">
+            <li>5 adaptive OOS percentile thresholds (P17/P33/P50/P67/P83)</li>
+            <li>Each threshold crossed adds/removes 10% BTC exposure</li>
+            <li>Holm gate: only act when signal passes sequential binomial test (&alpha;=0.05)</li>
+            <li>7-day directional cooldown to prevent whipsaw</li>
+            <li>Quarterly pair re-selection, daily signal reaction</li>
+          </ul>
+        </div>
+
+        <div class="method-card">
+          <div class="method-card-header">
+            <div class="method-icon" style="background:rgba(245,158,11,0.1)">&#128260;</div>
+            <h3>Ternary Signal Scoring</h3>
+          </div>
+          <p>All raw on-chain and macro signals are converted to ternary {+1, 0, -1} scores using 730-day rolling percentile windows before entering the combinatorics engine.</p>
+          <ul style="margin-top:8px">
+            <li>Raw value &gt; 80th percentile &rarr; +1 (bearish)</li>
+            <li>Raw value &lt; 20th percentile &rarr; -1 (bullish)</li>
+            <li>Otherwise &rarr; 0 (neutral)</li>
+            <li>Inverse-direction signals (VIX, Coinbase Prem, SP500 Trend) are sign-flipped</li>
+          </ul>
+        </div>
+
+        <div class="method-card">
+          <div class="method-card-header">
+            <div class="method-icon" style="background:rgba(129,140,248,0.1)">&#128202;</div>
+            <h3>Horizon Weights &amp; Scoring</h3>
+          </div>
+          <p>Pair selection uses H90 (90-day forward returns) which shows the strongest predictive signal. Inference scoring uses uniform weights across all 6 horizons.</p>
+          <ul style="margin-top:8px">
+            <li>Pair selection horizon: H90 (90 days)</li>
+            <li>Inference horizons: 3d, 7d, 14d, 30d, 90d, 180d</li>
+            <li>Uniform 1/6 weight per horizon (maximum entropy null)</li>
+            <li>Prior H30=0.30 weights were undocumented &mdash; uniform adopted on principle</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- Parameters table -->
+      <div class="section-title" style="margin-bottom:16px">Strategy Parameters</div>
+      <div class="chart-card" style="margin-bottom:28px">
+        <table class="param-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Description</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Allocation Step (Delta)</td><td>BTC exposure increment per threshold crossed</td><td>10%</td></tr>
+            <tr><td>Number of Thresholds</td><td>Adaptive OOS percentile levels</td><td>5 (P17 / P33 / P50 / P67 / P83)</td></tr>
+            <tr><td>Exposure Range</td><td>Min/max BTC allocation</td><td>0% &mdash; 100%</td></tr>
+            <tr><td>Neutral Exposure</td><td>Default position when gated</td><td>50%</td></tr>
+            <tr><td>Ensemble Windows</td><td>Training window lengths averaged</td><td>2Y + 3Y</td></tr>
+            <tr><td>Pair Selection Horizon</td><td>Forward-return horizon for pair_power ranking</td><td>H90 (90 days)</td></tr>
+            <tr><td>Rebalance Frequency</td><td>Pair re-selection interval</td><td>Quarterly (3M)</td></tr>
+            <tr><td>Top Pairs</td><td>Fraction of pair universe selected</td><td>Top 1% + mean+1&sigma; floor (min 5)</td></tr>
+            <tr><td>Gate Method</td><td>Statistical test for signal validity</td><td>Holm step-down (&alpha;=0.05, 90d horizon)</td></tr>
+            <tr><td>Gate Lookback</td><td>History used to calibrate gate threshold</td><td>3Y trailing combo</td></tr>
+            <tr><td>Cooldown</td><td>Directional change lockout</td><td>7 days</td></tr>
+            <tr><td>MVRV Regime Weights</td><td>Training day weights by regime distance</td><td>Same=1.0 &bull; Adjacent=0.5 &bull; Distant=0.1</td></tr>
+            <tr><td>Min Regime Days</td><td>Minimum same-regime days before weighting</td><td>120 days (else uniform)</td></tr>
+            <tr><td>Signal Activity Filter</td><td>Min activity rate for signal inclusion</td><td>&gt; 5% non-zero</td></tr>
+            <tr><td>Ternary Window</td><td>Rolling percentile window for scoring</td><td>730 days (2 years)</td></tr>
+            <tr><td>Transaction Cost</td><td>Round-trip fee per unit exposure change</td><td>10 bps</td></tr>
+            <tr><td>MABreak Lookahead Fix</td><td>Forward return endpoint guard</td><td>Applied (close.index[fi] &lt; before)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Engineering notes -->
+      <div class="section-title" style="margin-bottom:16px">Engineering Notes &amp; Changelog</div>
+      <div class="chart-card" style="margin-bottom:28px; padding:20px">
+        <div class="timeline">
+          <div class="timeline-item highlight">
+            <strong>2026-03-05 &mdash; Uniform horizon weights adopted</strong>
+            Switched inference weights from {H30=0.30, H90=0.25} (inherited from btc_regime_backtest.py with no documented rationale) to uniform 1/6 per horizon. Maximum entropy null hypothesis. Backtest difference not significant (p=0.30), but uniform adopted on principle.
+          </div>
+          <div class="timeline-item highlight">
+            <strong>2026-03-04 &mdash; D10 production version</strong>
+            First production-ready strategy. 2Y+3Y ensemble, H90 pair selection, Holm gate, adaptive OOS thresholds, 7-day cooldown.
+          </div>
+          <div class="timeline-item">
+            <strong>MABreak lookahead bias fix</strong>
+            _find_events() in MABreakSignal now guards that close.index[fi] &lt; before, preventing forward return leakage into training. Affects 6 of 55 signals (MABreak variants). Colleague's "fixed" file had this guard commented out &mdash; re-applied.
+          </div>
+          <div class="timeline-item">
+            <strong>Activity filter moved inside training window (Fix 4)</strong>
+            Signal activity filtering now runs per-window (not on full sample) to prevent candidate selection lookahead bias. Previously, signals with low full-sample activity were excluded globally, leaking future data into the signal universe decision.
+          </div>
+          <div class="timeline-item">
+            <strong>Cooldown direction tracking fix (Fix 1, from Darko)</strong>
+            apply_cooldown() now tracks last_attempted direction (not last_executed). v1 bug: blocked reversals left last_dir stale, allowing bypass of the cooldown on the next bar.
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    <!-- Signal detail (shown on click) -->
-    <div id="signal-detail-wrap">
-      <h2 id="signal-detail-title">Signal</h2>
-      <div id="signal-detail-desc"></div>
-      <div id="signal-detail-chart-wrap"><canvas id="signal-detail-chart"></canvas></div>
-    </div>
-
-    <!-- Signal grid by category -->
-    <div id="signal-categories"></div>
-
   </div>
 
   <script>
+    // ===================== TABS =====================
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById("tab-" + tab.dataset.tab).classList.add("active");
+      });
+    });
+
+    // ===================== SHARED =====================
     const CATEGORIES = ["valuation", "onchain", "derivatives", "proxy", "macro"];
     const CAT_LABELS = {
-      valuation: "Valuation",
-      onchain: "On-Chain",
+      valuation:   "Valuation",
+      onchain:     "On-Chain",
       derivatives: "Derivatives",
-      proxy: "Proxy / Computed",
-      macro: "Macro",
+      proxy:       "Proxy / Computed",
+      macro:       "Macro",
     };
 
     Chart.defaults.color = "#6b7280";
@@ -251,17 +730,17 @@
     };
 
     let detailChart = null;
-    let activePill = null;
+    let activePill  = null;
 
     function scoreClass(v) {
       if (v === -1) return "bullish";
-      if (v === 1) return "bearish";
+      if (v === 1)  return "bearish";
       return "neutral";
     }
 
     function scoreLabel(v) {
       if (v === -1) return "BULL";
-      if (v === 1) return "BEAR";
+      if (v === 1)  return "BEAR";
       return "—";
     }
 
@@ -269,12 +748,31 @@
       return n == null ? "—" : n.toLocaleString("en-US", { maximumFractionDigits: digits });
     }
 
-    function compositeColor(v) {
-      if (v == null) return "#6b7280";
-      if (v >= 0.5) return "#ef4444";
-      if (v <= -0.5) return "#10b981";
-      return "#f59e0b";
+    // ===================== D10 HELPERS =====================
+
+    function getMVRVRegime(mvrv) {
+      if (mvrv == null || isNaN(mvrv)) return { label: "UNKNOWN", cls: "regime-neutral", desc: "MVRV not available" };
+      if (mvrv < 0)  return { label: "COLD",    cls: "regime-cold",    desc: "Below realized value — historically undervalued" };
+      if (mvrv < 2)  return { label: "NEUTRAL", cls: "regime-neutral", desc: "Fair value zone — balanced risk/reward" };
+      if (mvrv < 5)  return { label: "HOT",     cls: "regime-hot",     desc: "Elevated vs realized value — caution warranted" };
+      return           { label: "EXTREME", cls: "regime-extreme", desc: "Historically extreme overvaluation" };
     }
+
+    function impliedD10Exposure(composite) {
+      // Proxy mapping: composite score → implied D10 allocation
+      // D10 uses 5 thresholds × 10% steps; composite is an approximation
+      if (composite == null) return { pct: 50, color: "#f59e0b", note: "Neutral (no signal)" };
+      const c = composite;
+      if      (c <= -0.6) return { pct: 90, color: "#10b981", note: "Strong bullish signal — high BTC exposure" };
+      else if (c <= -0.4) return { pct: 75, color: "#34d399", note: "Moderate bullish signal — elevated BTC exposure" };
+      else if (c <= -0.2) return { pct: 60, color: "#6ee7b7", note: "Mild bullish tilt" };
+      else if (c <   0.2) return { pct: 50, color: "#f59e0b", note: "Neutral zone — hold 50% BTC" };
+      else if (c <   0.4) return { pct: 40, color: "#fca5a5", note: "Mild bearish tilt" };
+      else if (c <   0.6) return { pct: 25, color: "#f87171", note: "Moderate bearish signal — reduced BTC exposure" };
+      else                return { pct: 10, color: "#ef4444", note: "Strong bearish signal — low BTC exposure" };
+    }
+
+    // ===================== INIT =====================
 
     async function init() {
       let data;
@@ -295,73 +793,64 @@
 
       const { summary, btc_price, composite, signals, last_updated } = data;
 
-      // Header
       document.getElementById("last-updated").textContent =
         "Updated: " + new Date(last_updated).toLocaleString();
 
-      // Summary cards
+      // ---- Summary cards ----
       document.getElementById("s-price").textContent = "$" + fmt(summary.btc_price_today);
       const cEl = document.getElementById("s-composite");
-      const cv = summary.composite_today;
+      const cv  = summary.composite_today;
       cEl.textContent = cv != null ? (cv >= 0 ? "+" : "") + cv.toFixed(3) : "—";
       cEl.className = "card-value " + (cv > 0.1 ? "bearish" : cv < -0.1 ? "bullish" : "neutral");
       document.getElementById("s-bullish").textContent = summary.bullish_signals;
       document.getElementById("s-neutral").textContent = summary.neutral_signals;
       document.getElementById("s-bearish").textContent = summary.bearish_signals;
-      document.getElementById("s-total").textContent = summary.total_signals_available;
+      document.getElementById("s-total").textContent   = summary.total_signals_available;
 
-      // BTC price chart
-      const btcLabels = btc_price.map(r => r.date);
-      const btcValues = btc_price.map(r => r.value);
+      // ---- BTC price chart ----
       new Chart(document.getElementById("btc-chart"), {
         type: "line",
         data: {
-          labels: btcLabels,
+          labels: btc_price.map(r => r.date),
           datasets: [{
-            data: btcValues,
-            borderColor: "#f59e0b",
-            borderWidth: 1.5,
-            pointRadius: 0,
-            fill: true,
-            backgroundColor: "rgba(245,158,11,0.07)",
-            tension: 0.3,
+            data: btc_price.map(r => r.value),
+            borderColor: "#f59e0b", borderWidth: 1.5,
+            pointRadius: 0, fill: true,
+            backgroundColor: "rgba(245,158,11,0.07)", tension: 0.3,
           }],
         },
         options: {
           ...chartDefaults,
           scales: {
             ...chartDefaults.scales,
-            y: { ...chartDefaults.scales.y, ticks: { ...chartDefaults.scales.y.ticks, callback: v => "$" + v.toLocaleString() } },
+            y: { ...chartDefaults.scales.y, ticks: { callback: v => "$" + v.toLocaleString() } },
           },
         },
       });
 
-      // Composite chart
-      const compLabels = composite.map(r => r.date);
+      // ---- Composite chart ----
       const compValues = composite.map(r => r.value);
-      const compColors = compValues.map(v =>
-        v == null ? "transparent" : v >= 0.5 ? "rgba(239,68,68,0.8)" : v <= -0.5 ? "rgba(16,185,129,0.8)" : "rgba(245,158,11,0.7)"
-      );
       new Chart(document.getElementById("composite-chart"), {
         type: "bar",
         data: {
-          labels: compLabels,
+          labels: composite.map(r => r.date),
           datasets: [{
             data: compValues,
-            backgroundColor: compColors,
+            backgroundColor: compValues.map(v =>
+              v == null ? "transparent"
+              : v >= 0.5  ? "rgba(239,68,68,0.8)"
+              : v <= -0.5 ? "rgba(16,185,129,0.8)"
+              : "rgba(245,158,11,0.7)"),
             borderWidth: 0,
           }],
         },
         options: {
           ...chartDefaults,
-          scales: {
-            ...chartDefaults.scales,
-            y: { ...chartDefaults.scales.y, min: -1, max: 1 },
-          },
+          scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, min: -1, max: 1 } },
         },
       });
 
-      // Signal grid by category
+      // ---- Signal grid ----
       const container = document.getElementById("signal-categories");
       for (const cat of CATEGORIES) {
         const catSignals = Object.entries(signals).filter(([, s]) => s.category === cat);
@@ -388,13 +877,84 @@
               <span class="signal-pill-cat">${sig.source}</span>
               <span class="badge ${cls}">${scoreLabel(lastTernary)}</span>
             </div>`;
-
           pill.addEventListener("click", () => showSignal(key, sig, pill));
           grid.appendChild(pill);
         }
 
         container.appendChild(grid);
       }
+
+      // ===================== D10 TAB =====================
+
+      // MVRV regime
+      const mvrvSig  = signals["MVRV"];
+      const mvrvLast = mvrvSig ? [...mvrvSig.values].reverse().find(v => v.raw != null) : null;
+      const mvrvVal  = mvrvLast ? mvrvLast.raw : null;
+      const regime   = getMVRVRegime(mvrvVal);
+
+      document.getElementById("d10-regime-badge").textContent = regime.label;
+      document.getElementById("d10-regime-badge").className   = "regime-badge " + regime.cls;
+      document.getElementById("d10-regime-sub").innerHTML =
+        `MVRV: <strong>${mvrvVal != null ? mvrvVal.toFixed(3) : "N/A"}</strong> &mdash; ${regime.desc}`;
+
+      // Implied exposure proxy
+      const exp = impliedD10Exposure(cv);
+      document.getElementById("d10-exposure-value").textContent = exp.pct + "%";
+      document.getElementById("d10-exposure-value").style.color = exp.color;
+      document.getElementById("d10-gauge-fill").style.width      = exp.pct + "%";
+      document.getElementById("d10-gauge-fill").style.background = exp.color;
+      document.getElementById("d10-exposure-note").textContent   = exp.note;
+
+      // Signal breakdown by category for D10 inputs
+      const breakdown = document.getElementById("d10-signal-breakdown");
+      for (const cat of CATEGORIES) {
+        const catSigs = Object.entries(signals).filter(([, s]) => s.category === cat);
+        if (!catSigs.length) continue;
+
+        let bull = 0, bear = 0, neut = 0;
+        catSigs.forEach(([, sig]) => {
+          const t = [...sig.values].reverse().find(v => v.ternary != null)?.ternary ?? 0;
+          if (t === -1) bull++;
+          else if (t === 1) bear++;
+          else neut++;
+        });
+
+        const div = document.createElement("div");
+        div.className = "universe-cat";
+        div.innerHTML = `
+          <div class="universe-cat-name">${CAT_LABELS[cat] || cat}</div>
+          <div class="universe-count">${catSigs.length} signals</div>
+          <div class="universe-breakdown">
+            <span class="universe-bull">&#9650; ${bull} bullish</span><br>
+            <span style="color:var(--muted)">&#8212; ${neut} neutral</span><br>
+            <span class="universe-bear">&#9660; ${bear} bearish</span>
+          </div>`;
+        breakdown.appendChild(div);
+      }
+
+      // Total row
+      const totalBull = Object.values(signals).reduce((acc, s) => {
+        const t = [...s.values].reverse().find(v => v.ternary != null)?.ternary ?? 0;
+        return t === -1 ? acc + 1 : acc;
+      }, 0);
+      const totalBear = Object.values(signals).reduce((acc, s) => {
+        const t = [...s.values].reverse().find(v => v.ternary != null)?.ternary ?? 0;
+        return t === 1 ? acc + 1 : acc;
+      }, 0);
+      const totalNeut = Object.values(signals).length - totalBull - totalBear;
+
+      const totalDiv = document.createElement("div");
+      totalDiv.className = "universe-cat";
+      totalDiv.style.borderColor = "var(--accent)";
+      totalDiv.innerHTML = `
+        <div class="universe-cat-name" style="color:var(--accent)">Total (on-chain)</div>
+        <div class="universe-count" style="color:var(--accent)">${Object.values(signals).length} signals</div>
+        <div class="universe-breakdown">
+          <span class="universe-bull">&#9650; ${totalBull} bullish</span><br>
+          <span style="color:var(--muted)">&#8212; ${totalNeut} neutral</span><br>
+          <span class="universe-bear">&#9660; ${totalBear} bearish</span>
+        </div>`;
+      breakdown.appendChild(totalDiv);
     }
 
     function showSignal(key, sig, pill) {
@@ -407,38 +967,26 @@
       wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
       document.getElementById("signal-detail-title").textContent = sig.label;
-      document.getElementById("signal-detail-desc").textContent = sig.description || "";
-
-      const labels = sig.values.map(v => v.date);
-      const rawVals = sig.values.map(v => v.raw);
-      const ternVals = sig.values.map(v => v.ternary);
+      document.getElementById("signal-detail-desc").textContent  = sig.description || "";
 
       if (detailChart) detailChart.destroy();
 
       detailChart = new Chart(document.getElementById("signal-detail-chart"), {
         type: "line",
         data: {
-          labels,
+          labels: sig.values.map(v => v.date),
           datasets: [
             {
               label: "Raw",
-              data: rawVals,
-              borderColor: "#818cf8",
-              borderWidth: 1.5,
-              pointRadius: 0,
-              fill: false,
-              tension: 0.3,
-              yAxisID: "y",
+              data: sig.values.map(v => v.raw),
+              borderColor: "#818cf8", borderWidth: 1.5,
+              pointRadius: 0, fill: false, tension: 0.3, yAxisID: "y",
             },
             {
               label: "Ternary",
-              data: ternVals,
-              borderColor: "rgba(245,158,11,0.6)",
-              borderWidth: 1,
-              pointRadius: 0,
-              fill: false,
-              stepped: true,
-              yAxisID: "y2",
+              data: sig.values.map(v => v.ternary),
+              borderColor: "rgba(245,158,11,0.6)", borderWidth: 1,
+              pointRadius: 0, fill: false, stepped: true, yAxisID: "y2",
             },
           ],
         },
@@ -450,11 +998,9 @@
           },
           scales: {
             x: chartDefaults.scales.x,
-            y: { position: "left", grid: { color: "#1e2130" }, ticks: { maxTicksLimit: 5 } },
+            y:  { position: "left",  grid: { color: "#1e2130" }, ticks: { maxTicksLimit: 5 } },
             y2: {
-              position: "right",
-              min: -1.5,
-              max: 1.5,
+              position: "right", min: -1.5, max: 1.5,
               ticks: { stepSize: 1, callback: v => v === 1 ? "BEAR" : v === -1 ? "BULL" : "—" },
               grid: { display: false },
             },
