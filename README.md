@@ -1,92 +1,96 @@
 # BTC Signals Dashboard
 
-BTC signals dashboard. GitHub Actions fetches data, Vercel serves the React app.
+A daily BTC market signals dashboard that aggregates 31 on-chain, derivatives, valuation, and macro indicators into a single composite score. Data is fetched automatically every day and served as a static web app.
 
-## Architecture
+## How it works
 
-```
-GitHub Actions (cron: daily 8am UTC)
-  → scripts/fetch_signals.py
-  → public/data.json (committed to repo)
-
-Vercel
-  → React app fetches /data.json on load
-  → Renders charts and signal table
-```
-
-## Setup
-
-### 1. Create GitHub repo and push this folder
-
-```bash
-cd signals-dashboard
-git init
-git add .
-git commit -m "initial"
-git remote add origin https://github.com/YOUR_USERNAME/signals-dashboard.git
-git push -u origin main
-```
-
-### 2. Add GitHub Secrets
-
-Go to repo → Settings → Secrets and variables → Actions → New secret:
-
-| Secret name         | Value                          |
-|---------------------|--------------------------------|
-| `CRYPTOQUANT_KEY`   | Your CryptoQuant API key       |
-| `FRED_API_KEY`      | Your FRED API key              |
-| `TELEGRAM_BOT_TOKEN`| Your Telegram bot token        |
-| `TELEGRAM_CHAT_ID`  | Your Telegram chat/group ID    |
-| `COINGECKO_API_KEY` | Your CoinGecko API key (optional) |
-
-### 3. Trigger manually (first run)
-
-Go to repo → Actions → "Fetch BTC Signals" → Run workflow.
-
-After it completes, `public/data.json` will be populated with 365 days of signal data.
-
-### 4. Deploy to Vercel
-
-Connect your GitHub repo to Vercel. Set framework to "Other" (or Vite/CRA once you add the React app). Vercel auto-deploys on every push — including when GitHub Actions commits the updated `data.json`.
-
-## Local testing
-
-```bash
-pip install -r requirements.txt
-export CRYPTOQUANT_KEY="your_key"
-export FRED_API_KEY="your_key"
-python scripts/fetch_signals.py
-# → writes public/data.json
-```
+A Python pipeline runs on a daily schedule, pulls data from multiple sources, computes ternary signal scores, and writes the results to `public/data.json`. The web app reads this file and renders charts and signal tables — no backend required.
 
 ## Signals
 
-31 signals across 4 categories:
+31 signals across 5 categories:
 
-- **Valuation** (8): MVRV, SOPR, SOPR_Adj, STH_SOPR, LTH_SOPR, NVT, NVM, S2F_Dev
-- **On-chain** (7): Exch_Reserve, Exch_Netflow, Whale_Ratio, MPI, Puell, SOPR_Ratio, Dormancy
-- **Derivatives** (5): Lev_Ratio, SSR, Open_Interest, Coinbase_Prem, NRPL
-- **Proxy/Macro** (11): MVRV_Proxy, Puell_Proxy, RealVol_30, RealVol_90, LR_1Y, LR_2Y_Z, VIX, DXY, SP500_Trend, Gold_90d, HY_Spread
+### Valuation (8)
+| Signal | Description |
+|---|---|
+| MVRV | Market Value to Realized Value. High = overvalued. |
+| SOPR | Spent Output Profit Ratio. Above 1 = coins moving in profit. |
+| SOPR Adjusted | SOPR excluding same-day transactions. |
+| STH SOPR | Short-Term Holder SOPR. High = recent buyers in profit. |
+| LTH SOPR | Long-Term Holder SOPR. High = long-term holders distributing. |
+| NVT Ratio | Network Value to Transactions. High = overvalued vs on-chain activity. |
+| NVM Ratio | Network Value to Metcalfe. High = overvalued vs network growth. |
+| S2F Deviation | Stock-to-Flow model deviation. High = price above model. |
 
-Ternary scoring: rolling 730-day 80/20 percentile windows → `+1` (bearish), `0` (neutral), `-1` (bullish).
+### On-Chain (7)
+| Signal | Description |
+|---|---|
+| Exchange Reserve | BTC held on Binance. Rising = potential sell pressure. |
+| Exchange Netflow | Net BTC inflow to exchanges. Positive = sell pressure. |
+| Whale Ratio | Top-10 exchange inflows / total inflows. High = whale distribution. |
+| MPI | Miners' Position Index. High = miners selling. |
+| Puell Multiple | Daily miner revenue / 365-day MA. High = miners overselling. |
+| SOPR Ratio | LTH-SOPR / STH-SOPR ratio. |
+| Dormancy Flow | Average dormancy of spent outputs. High = old coins moving. |
 
-## Alert thresholds
+### Derivatives (5)
+| Signal | Description |
+|---|---|
+| Leverage Ratio | Estimated leverage ratio on Binance. High = fragile market. |
+| SSR | Stablecoin Supply Ratio. High = less stablecoin buying power. |
+| Open Interest | Futures open interest on Binance. High = overheated market. |
+| Coinbase Premium | BTC premium on Coinbase vs Binance. Positive = US buying pressure (bullish). |
+| NRPL | Net Realized Profit/Loss. Positive = profit-taking. |
 
-Edit constants at the top of `scripts/fetch_signals.py`:
+### Proxy / Computed (6)
+| Signal | Description |
+|---|---|
+| Mayer Multiple | Price / 200-day MA. Free proxy for MVRV. |
+| Puell Proxy | 14d price change / 365d price change. Miner revenue proxy. |
+| Realized Vol 30d | 30-day annualized realized volatility. |
+| Realized Vol 90d | 90-day annualized realized volatility. |
+| 1Y Log Return | BTC 1-year log return. High = overbought momentum. |
+| 2Y Z-Score | BTC 2-year price z-score. High = extended above long-run mean. |
 
-```python
-ALERT_COMPOSITE_BEARISH = 0.5     # composite >= 0.5 → bearish alert
-ALERT_COMPOSITE_BULLISH = -0.5    # composite <= -0.5 → bullish alert
-ALERT_BTC_CRASH_PCT     = -10.0   # BTC 7-day return <= -10% → crash alert
-ALERT_BTC_SURGE_PCT     = 15.0    # BTC 7-day return >= +15% → surge alert
-```
+### Macro (5)
+| Signal | Description |
+|---|---|
+| VIX | CBOE Volatility Index. Spike = fear / contrarian bullish. |
+| DXY | US Dollar Index. Strong USD = risk-off = bearish for BTC. |
+| S&P 500 Trend | S&P 500 % above/below 200-day MA. Positive = risk-on = bullish for BTC. |
+| Gold 90d Return | Rising gold = risk-off = bearish for BTC. |
+| HY Credit Spread | High-yield credit spread. High = credit stress = bearish. |
 
-## Cost
+## Scoring methodology
 
-| Component      | Cost  |
-|----------------|-------|
-| GitHub Actions | Free (uses ~2 min/day of 2,000 free min/month) |
-| Vercel         | Free  |
-| Telegram Bot   | Free  |
-| Signal APIs    | What you already pay |
-| **Total new**  | **$0** |
+Each signal is scored on a ternary scale using a rolling 730-day (2-year) percentile window:
+
+- `+1` (bearish) — signal above the 80th percentile
+- `0` (neutral) — signal between 20th and 80th percentile
+- `-1` (bullish) — signal below the 20th percentile
+
+For inverse-direction signals (VIX, Coinbase Premium, SP500 Trend), the sign is flipped so that the final score is always intuitive: positive = bearish pressure, negative = bullish pressure.
+
+The **composite score** is the simple mean of all available ternary scores on a given day, ranging from `-1` (fully bullish) to `+1` (fully bearish).
+
+## Alerts
+
+Telegram alerts are sent when any of the following thresholds are crossed:
+
+| Condition | Threshold |
+|---|---|
+| Composite >= | `+0.5` → bearish alert |
+| Composite <= | `-0.5` → bullish alert |
+| BTC 7-day return <= | `-10%` → crash warning |
+| BTC 7-day return >= | `+15%` → surge alert |
+
+Thresholds can be adjusted at the top of `scripts/fetch_signals.py`.
+
+## Data sources
+
+| Source | Signals |
+|---|---|
+| CryptoQuant API | 20 on-chain and derivatives signals |
+| FRED (St. Louis Fed) | HY Credit Spread |
+| Yahoo Finance (yfinance) | BTC price, VIX, DXY, S&P 500, Gold |
+| Computed | Mayer Multiple, Puell Proxy, Realized Vol, Log Returns, Z-Score |
