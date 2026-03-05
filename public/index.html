@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTC Signals Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e2e8f0;
+      --muted: #6b7280;
+      --bullish: #10b981;
+      --bearish: #ef4444;
+      --neutral: #4b5563;
+      --accent: #f59e0b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.3px; }
+    #last-updated { color: var(--muted); font-size: 12px; }
+
+    .main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+    /* Summary cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .card-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .card-value { font-size: 24px; font-weight: 700; }
+    .card-value.bullish { color: var(--bullish); }
+    .card-value.bearish { color: var(--bearish); }
+    .card-value.neutral { color: var(--text); }
+
+    /* Charts */
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .chart-card h2 { font-size: 13px; font-weight: 600; margin-bottom: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+    .chart-wrap { position: relative; height: 220px; }
+
+    /* Signal chart — full width */
+    .chart-card.full { grid-column: 1 / -1; }
+
+    /* Signal detail chart */
+    #signal-detail-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 28px;
+      display: none;
+    }
+
+    #signal-detail-wrap h2 { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+    #signal-detail-desc { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+    #signal-detail-chart-wrap { position: relative; height: 200px; }
+
+    /* Signal grid */
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .signal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .signal-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .signal-pill:hover { border-color: #4b5563; background: #222536; }
+    .signal-pill.active { border-color: var(--accent); }
+
+    .signal-pill-name {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .signal-pill-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .signal-pill-cat { font-size: 10px; color: var(--muted); }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .badge.bullish { background: rgba(16,185,129,0.15); color: var(--bullish); }
+    .badge.bearish { background: rgba(239,68,68,0.15); color: var(--bearish); }
+    .badge.neutral { background: rgba(75,85,99,0.2); color: var(--muted); }
+
+    /* Loading / error */
+    #loading { text-align: center; padding: 80px; color: var(--muted); font-size: 16px; }
+    #error { text-align: center; padding: 80px; color: var(--bearish); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BTC Signals Dashboard</h1>
+    <span id="last-updated">Loading...</span>
+  </header>
+
+  <div id="loading">Loading data...</div>
+  <div id="error" style="display:none"></div>
+
+  <div class="main" id="app" style="display:none">
+
+    <!-- Summary cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">BTC Price</div>
+        <div class="card-value neutral" id="s-price">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Composite Score</div>
+        <div class="card-value" id="s-composite">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Bullish Signals</div>
+        <div class="card-value bullish" id="s-bullish">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Neutral Signals</div>
+        <div class="card-value neutral" id="s-neutral">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Bearish Signals</div>
+        <div class="card-value bearish" id="s-bearish">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total Signals</div>
+        <div class="card-value neutral" id="s-total">—</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts">
+      <div class="chart-card">
+        <h2>BTC Price (USD)</h2>
+        <div class="chart-wrap"><canvas id="btc-chart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h2>Composite Score</h2>
+        <div class="chart-wrap"><canvas id="composite-chart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Signal detail (shown on click) -->
+    <div id="signal-detail-wrap">
+      <h2 id="signal-detail-title">Signal</h2>
+      <div id="signal-detail-desc"></div>
+      <div id="signal-detail-chart-wrap"><canvas id="signal-detail-chart"></canvas></div>
+    </div>
+
+    <!-- Signal grid by category -->
+    <div id="signal-categories"></div>
+
+  </div>
+
+  <script>
+    const CATEGORIES = ["valuation", "onchain", "derivatives", "proxy", "macro"];
+    const CAT_LABELS = {
+      valuation: "Valuation",
+      onchain: "On-Chain",
+      derivatives: "Derivatives",
+      proxy: "Proxy / Computed",
+      macro: "Macro",
+    };
+
+    Chart.defaults.color = "#6b7280";
+    Chart.defaults.borderColor = "#2a2d3a";
+
+    const chartDefaults = {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
+      scales: {
+        x: { ticks: { maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "#1e2130" } },
+        y: { ticks: { maxTicksLimit: 5 }, grid: { color: "#1e2130" } },
+      },
+    };
+
+    let detailChart = null;
+    let activePill = null;
+
+    function scoreClass(v) {
+      if (v === -1) return "bullish";
+      if (v === 1) return "bearish";
+      return "neutral";
+    }
+
+    function scoreLabel(v) {
+      if (v === -1) return "BULL";
+      if (v === 1) return "BEAR";
+      return "—";
+    }
+
+    function fmt(n, digits = 0) {
+      return n == null ? "—" : n.toLocaleString("en-US", { maximumFractionDigits: digits });
+    }
+
+    function compositeColor(v) {
+      if (v == null) return "#6b7280";
+      if (v >= 0.5) return "#ef4444";
+      if (v <= -0.5) return "#10b981";
+      return "#f59e0b";
+    }
+
+    async function init() {
+      let data;
+      try {
+        const res = await fetch("data.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        data = await res.json();
+      } catch (e) {
+        document.getElementById("loading").style.display = "none";
+        const el = document.getElementById("error");
+        el.style.display = "block";
+        el.textContent = "Failed to load data.json: " + e.message;
+        return;
+      }
+
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("app").style.display = "block";
+
+      const { summary, btc_price, composite, signals, last_updated } = data;
+
+      // Header
+      document.getElementById("last-updated").textContent =
+        "Updated: " + new Date(last_updated).toLocaleString();
+
+      // Summary cards
+      document.getElementById("s-price").textContent = "$" + fmt(summary.btc_price_today);
+      const cEl = document.getElementById("s-composite");
+      const cv = summary.composite_today;
+      cEl.textContent = cv != null ? (cv >= 0 ? "+" : "") + cv.toFixed(3) : "—";
+      cEl.className = "card-value " + (cv > 0.1 ? "bearish" : cv < -0.1 ? "bullish" : "neutral");
+      document.getElementById("s-bullish").textContent = summary.bullish_signals;
+      document.getElementById("s-neutral").textContent = summary.neutral_signals;
+      document.getElementById("s-bearish").textContent = summary.bearish_signals;
+      document.getElementById("s-total").textContent = summary.total_signals_available;
+
+      // BTC price chart
+      const btcLabels = btc_price.map(r => r.date);
+      const btcValues = btc_price.map(r => r.value);
+      new Chart(document.getElementById("btc-chart"), {
+        type: "line",
+        data: {
+          labels: btcLabels,
+          datasets: [{
+            data: btcValues,
+            borderColor: "#f59e0b",
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: true,
+            backgroundColor: "rgba(245,158,11,0.07)",
+            tension: 0.3,
+          }],
+        },
+        options: {
+          ...chartDefaults,
+          scales: {
+            ...chartDefaults.scales,
+            y: { ...chartDefaults.scales.y, ticks: { ...chartDefaults.scales.y.ticks, callback: v => "$" + v.toLocaleString() } },
+          },
+        },
+      });
+
+      // Composite chart
+      const compLabels = composite.map(r => r.date);
+      const compValues = composite.map(r => r.value);
+      const compColors = compValues.map(v =>
+        v == null ? "transparent" : v >= 0.5 ? "rgba(239,68,68,0.8)" : v <= -0.5 ? "rgba(16,185,129,0.8)" : "rgba(245,158,11,0.7)"
+      );
+      new Chart(document.getElementById("composite-chart"), {
+        type: "bar",
+        data: {
+          labels: compLabels,
+          datasets: [{
+            data: compValues,
+            backgroundColor: compColors,
+            borderWidth: 0,
+          }],
+        },
+        options: {
+          ...chartDefaults,
+          scales: {
+            ...chartDefaults.scales,
+            y: { ...chartDefaults.scales.y, min: -1, max: 1 },
+          },
+        },
+      });
+
+      // Signal grid by category
+      const container = document.getElementById("signal-categories");
+      for (const cat of CATEGORIES) {
+        const catSignals = Object.entries(signals).filter(([, s]) => s.category === cat);
+        if (!catSignals.length) continue;
+
+        const title = document.createElement("div");
+        title.className = "section-title";
+        title.textContent = CAT_LABELS[cat] || cat;
+        container.appendChild(title);
+
+        const grid = document.createElement("div");
+        grid.className = "signal-grid";
+
+        for (const [key, sig] of catSignals) {
+          const lastTernary = [...sig.values].reverse().find(v => v.ternary != null)?.ternary ?? 0;
+          const cls = scoreClass(lastTernary);
+
+          const pill = document.createElement("div");
+          pill.className = "signal-pill";
+          pill.dataset.key = key;
+          pill.innerHTML = `
+            <div class="signal-pill-name" title="${sig.label}">${sig.label}</div>
+            <div class="signal-pill-row">
+              <span class="signal-pill-cat">${sig.source}</span>
+              <span class="badge ${cls}">${scoreLabel(lastTernary)}</span>
+            </div>`;
+
+          pill.addEventListener("click", () => showSignal(key, sig, pill));
+          grid.appendChild(pill);
+        }
+
+        container.appendChild(grid);
+      }
+    }
+
+    function showSignal(key, sig, pill) {
+      if (activePill) activePill.classList.remove("active");
+      activePill = pill;
+      pill.classList.add("active");
+
+      const wrap = document.getElementById("signal-detail-wrap");
+      wrap.style.display = "block";
+      wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+      document.getElementById("signal-detail-title").textContent = sig.label;
+      document.getElementById("signal-detail-desc").textContent = sig.description || "";
+
+      const labels = sig.values.map(v => v.date);
+      const rawVals = sig.values.map(v => v.raw);
+      const ternVals = sig.values.map(v => v.ternary);
+
+      if (detailChart) detailChart.destroy();
+
+      detailChart = new Chart(document.getElementById("signal-detail-chart"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Raw",
+              data: rawVals,
+              borderColor: "#818cf8",
+              borderWidth: 1.5,
+              pointRadius: 0,
+              fill: false,
+              tension: 0.3,
+              yAxisID: "y",
+            },
+            {
+              label: "Ternary",
+              data: ternVals,
+              borderColor: "rgba(245,158,11,0.6)",
+              borderWidth: 1,
+              pointRadius: 0,
+              fill: false,
+              stepped: true,
+              yAxisID: "y2",
+            },
+          ],
+        },
+        options: {
+          ...chartDefaults,
+          plugins: {
+            ...chartDefaults.plugins,
+            legend: { display: true, labels: { color: "#9ca3af", boxWidth: 12, font: { size: 11 } } },
+          },
+          scales: {
+            x: chartDefaults.scales.x,
+            y: { position: "left", grid: { color: "#1e2130" }, ticks: { maxTicksLimit: 5 } },
+            y2: {
+              position: "right",
+              min: -1.5,
+              max: 1.5,
+              ticks: { stepSize: 1, callback: v => v === 1 ? "BEAR" : v === -1 ? "BULL" : "—" },
+              grid: { display: false },
+            },
+          },
+        },
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
