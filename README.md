@@ -1,6 +1,6 @@
 # BTC Signals Dashboard
 
-Zero-cost daily BTC signals dashboard. GitHub Actions fetches data, Vercel serves the React app.
+BTC signals dashboard. GitHub Actions fetches data, Vercel serves the React app.
 
 ## Architecture
 
