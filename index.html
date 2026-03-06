@@ -490,6 +490,25 @@
         &#9889; Live state derived from daily on-chain signals &mdash; pair-power combinatorics run quarterly offline
       </div>
 
+      <!-- D10 real backtest charts (shown when d10_data.json exists) -->
+      <div id="d10-charts-section" style="display:none; margin-bottom:28px">
+        <div class="charts">
+          <div class="chart-card">
+            <h2>D10 Combo Score (Ensemble)</h2>
+            <div class="chart-wrap"><canvas id="d10-combo-chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h2>D10 BTC Exposure (%)</h2>
+            <div class="chart-wrap"><canvas id="d10-exposure-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder when no d10_data.json -->
+      <div id="d10-no-data-note" class="note-chip" style="background:rgba(75,85,99,0.1);border-color:rgba(75,85,99,0.2);color:var(--muted);margin-bottom:20px">
+        &#128202; Run <code style="font-family:monospace;background:rgba(255,255,255,0.05);padding:1px 5px;border-radius:3px">python scripts/export_d10.py</code> after a backtest to show real combo &amp; exposure charts here
+      </div>
+
       <!-- Hero row: regime + exposure proxy + key stats -->
       <div class="d10-hero">
 
@@ -1009,7 +1028,85 @@
       });
     }
 
+    // ===================== D10 REAL DATA =====================
+    async function loadD10Data() {
+      let d10;
+      try {
+        const res = await fetch("public/d10_data.json");
+        if (!res.ok) return; // file doesn't exist yet → keep placeholder
+        d10 = await res.json();
+      } catch (_) {
+        return; // fetch failed (404 etc.) → keep placeholder
+      }
+
+      document.getElementById("d10-no-data-note").style.display = "none";
+      document.getElementById("d10-charts-section").style.display = "block";
+
+      const { combo, exposure, summary } = d10;
+
+      // Update exposure gauge with real D10 value
+      if (summary && summary.exposure_today != null) {
+        const realPct = Math.round(summary.exposure_today);
+        const color = realPct >= 60 ? "#10b981" : realPct <= 40 ? "#ef4444" : "#f59e0b";
+        document.getElementById("d10-exposure-value").textContent = realPct + "%";
+        document.getElementById("d10-exposure-value").style.color = color;
+        document.getElementById("d10-gauge-fill").style.width = realPct + "%";
+        document.getElementById("d10-gauge-fill").style.background = color;
+        document.getElementById("d10-exposure-note").textContent =
+          "Real D10 allocation from backtest (combo: " +
+          (summary.combo_today >= 0 ? "+" : "") +
+          (summary.combo_today != null ? summary.combo_today.toFixed(3) : "N/A") + ")";
+      }
+
+      // Combo chart
+      const comboValues = combo.map(r => r.value);
+      new Chart(document.getElementById("d10-combo-chart"), {
+        type: "bar",
+        data: {
+          labels: combo.map(r => r.date),
+          datasets: [{
+            data: comboValues,
+            backgroundColor: comboValues.map(v =>
+              v == null ? "transparent"
+              : v >= 0.3  ? "rgba(239,68,68,0.75)"
+              : v <= -0.3 ? "rgba(16,185,129,0.75)"
+              : "rgba(245,158,11,0.6)"),
+            borderWidth: 0,
+          }],
+        },
+        options: {
+          ...chartDefaults,
+          scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, min: -1, max: 1 } },
+        },
+      });
+
+      // Exposure chart
+      const expValues = exposure.map(r => r.value);
+      new Chart(document.getElementById("d10-exposure-chart"), {
+        type: "line",
+        data: {
+          labels: exposure.map(r => r.date),
+          datasets: [{
+            data: expValues,
+            borderColor: "#818cf8", borderWidth: 1.5,
+            pointRadius: 0, fill: true,
+            backgroundColor: "rgba(129,140,248,0.08)", tension: 0,
+            stepped: "after",
+          }],
+        },
+        options: {
+          ...chartDefaults,
+          scales: {
+            ...chartDefaults.scales,
+            y: { ...chartDefaults.scales.y, min: 0, max: 100,
+                 ticks: { callback: v => v + "%" } },
+          },
+        },
+      });
+    }
+
     init();
+    loadD10Data();
   </script>
 </body>
 </html>
